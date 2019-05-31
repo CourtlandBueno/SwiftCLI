@@ -118,6 +118,17 @@ public class _Key<Value: ConvertibleFromString> {
         self.validation = validation
     }
     
+    /// Creates a new key
+    ///
+    /// - Parameters:
+    ///   - names: the names for the key; convention is to include a short name (-m) and a long name (--message)
+    ///   - description: A short description of what this key does for usage statements
+    public init(_ names: String ..., description: String, completion: ShellCompletion, validation: [Validation<Value>] = []) {
+        self.names = names
+        self.shortDescription = description
+        self.completion = completion
+        self.validation = validation
+    }
 }
 
 public class Key<Value: ConvertibleFromString>: _Key<Value>, AnyKey, ValueBox {
