@@ -57,11 +57,19 @@ public class Task {
             }
             self.process.arguments = arguments
         } else {
-            self.process.launchPath = "/usr/bin/env"
+            if #available(OSX 10.13, *) {
+                self.process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
+            } else {
+                self.process.launchPath = "/usr/bin/env"
+            }
             self.process.arguments = [executable] + arguments
         }
         if let directory = directory {
-            self.process.currentDirectoryPath = directory
+            if #available(OSX 10.13, *) {
+                self.process.currentDirectoryURL = URL(fileURLWithPath: directory, isDirectory: true)
+            } else {
+                self.process.currentDirectoryPath = directory
+            }
         }
         
         if stdout !== WriteStream.stdout {
@@ -176,7 +184,11 @@ public class Task {
         }
         
         process.environment = env
-        process.launch()
+        if #available(OSX 10.13, *) {
+            try! process.run()
+        } else {
+            process.launch()
+        }
     }
     
 }
@@ -326,7 +338,19 @@ extension Task {
 
 extension Task: CustomStringConvertible {
     public var description: String {
-        var str = "Task(" + process.launchPath! + " " + process.arguments!.joined(separator: " ")
+        var str: String
+        if #available(OSX 10.13, *) {
+            str = process.executableURL!.path + " " + process.arguments!.joined(separator: " ")
+            if process.currentDirectoryURL!.path != FileManager.default.currentDirectoryPath {
+                str += " , directory: " + process.currentDirectoryURL!.path
+            }
+        } else {
+            str = "Task(" + process.launchPath! + " " + process.arguments!.joined(separator: " ")
+            if process.currentDirectoryPath != FileManager.default.currentDirectoryPath {
+                str += " , directory: " + process.currentDirectoryPath
+            }
+        }
+        
         if process.currentDirectoryPath != FileManager.default.currentDirectoryPath {
             str += " , directory: " + process.currentDirectoryPath
         }
