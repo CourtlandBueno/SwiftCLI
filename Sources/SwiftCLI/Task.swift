@@ -50,7 +50,11 @@ public class Task {
     public init(executable: String, arguments: [String] = [], directory: String? = nil, stdout: WritableStream = Term.stdout, stderr: WritableStream = Term.stderr, stdin: ReadableStream = ReadStream.stdin) {
         self.process = Process()
         if executable.hasPrefix("/") || executable.hasPrefix(".") {
-            self.process.launchPath = executable
+            if #available(OSX 10.13, *) {
+                self.process.executableURL = URL(fileURLWithPath: executable)
+            } else {
+                self.process.launchPath = executable
+            }
             self.process.arguments = arguments
         } else {
             self.process.launchPath = "/usr/bin/env"
