@@ -339,17 +339,17 @@ extension Task {
 extension Task: CustomStringConvertible {
     public var description: String {
         var str: String
-        if #available(OSX 10.13, *) {
-            str = process.executableURL!.path + " " + process.arguments!.joined(separator: " ")
-            if process.currentDirectoryURL!.path != FileManager.default.currentDirectoryPath {
-                str += " , directory: " + process.currentDirectoryURL!.path
-            }
-        } else {
+//        if #available(OSX 10.13, *) {
+//            str = process.executableURL.path + " " + process.arguments!.joined(separator: " ")
+//            if process.currentDirectoryURL!.path != FileManager.default.currentDirectoryPath {
+//                str += " , directory: " + process.currentDirectoryURL!.path
+//            }
+//        } else {
             str = "Task(" + process.launchPath! + " " + process.arguments!.joined(separator: " ")
             if process.currentDirectoryPath != FileManager.default.currentDirectoryPath {
                 str += " , directory: " + process.currentDirectoryPath
             }
-        }
+//        }
         
         if process.currentDirectoryPath != FileManager.default.currentDirectoryPath {
             str += " , directory: " + process.currentDirectoryPath
